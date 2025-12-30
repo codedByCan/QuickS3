@@ -104,6 +104,10 @@ docker exec quicks3 curl -fsS http://localhost:3000/ || echo 'service down'
 
 ## Screenshots / Ekran Görüntüleri 📸
 
+<img width="1919" height="895" alt="image" src="https://github.com/user-attachments/assets/27b33f80-3d34-4545-a831-bfe94c325958" />
+<img width="1919" height="879" alt="image" src="https://github.com/user-attachments/assets/58a32949-56b5-4ab8-9bb5-4754d519ce3a" />
+<img width="1912" height="915" alt="image" src="https://github.com/user-attachments/assets/ce726304-7b46-49d6-b357-616013fffedd" />
+
 
 ---
 
@@ -180,4 +184,5 @@ docker run -d -p 3000:3000 \
   -e MINIO_SECRET=miniosecret \
   -e SESSION_SECRET=change_me \
   --name quicks3 quicks3:latest
+
 ```
