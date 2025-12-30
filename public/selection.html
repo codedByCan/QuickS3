@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Workspace - QuickS3 Editor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/toast.css">
+</head>
+<body class="bg-[#1e1e1e] text-[#cccccc] h-screen flex items-center justify-center font-sans">
+
+    <div class="bg-[#252526] p-8 rounded-lg shadow-xl w-96 border border-[#333333]">
+        <h2 class="text-2xl font-semibold mb-6 text-center text-white" data-i18n="selectWorkspace">Select Workspace</h2>
+        
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium mb-2 text-[#9cdcfe]" data-i18n="selectBucket">Select Bucket</label>
+                <select id="bucket-select" class="w-full bg-[#3c3c3c] border border-[#3c3c3c] rounded px-3 py-2 focus:outline-none focus:border-[#007acc] text-white">
+                    <option value="" data-i18n="loading">Loading...</option>
+                </select>
+            </div>
+
+            <div id="folder-container" class="hidden">
+                <label class="block text-sm font-medium mb-2 text-[#9cdcfe]" data-i18n="selectFolder">Select Folder</label>
+                <div id="folder-list" class="bg-[#3c3c3c] border border-[#3c3c3c] rounded h-48 overflow-y-auto p-2 space-y-1">
+                </div>
+            </div>
+
+            <button id="open-btn" class="w-full bg-[#007acc] hover:bg-[#0062a3] text-white font-medium py-2 px-4 rounded transition disabled:opacity-50 disabled:cursor-not-allowed" disabled data-i18n="openEditor">
+                Open Editor
+            </button>
+        </div>
+    </div>
+
+    <script src="/js/i18n.js"></script>
+    <script src="/js/toast.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            applyTranslations();
+            const bucketSelect = document.getElementById('bucket-select');
+            const folderContainer = document.getElementById('folder-container');
+            const folderList = document.getElementById('folder-list');
+            const openBtn = document.getElementById('open-btn');
+            
+            let selectedBucket = '';
+            let selectedPrefix = '';
+
+            try {
+                const res = await fetch('/api/minio/buckets');
+                const buckets = await res.json();
+                
+                bucketSelect.innerHTML = `<option value="">${t('selectBucket')}</option>`;
+                buckets.forEach(b => {
+                    const opt = document.createElement('option');
+                    opt.value = b.name;
+                    opt.textContent = b.name;
+                    bucketSelect.appendChild(opt);
+                });
+            } catch (err) {
+                Toast.show(t('error') + ': ' + err.message, 'error');
+            }
+
+            bucketSelect.addEventListener('change', async (e) => {
+                selectedBucket = e.target.value;
+                selectedPrefix = '';
+                openBtn.disabled = !selectedBucket;
+                
+                if (!selectedBucket) {
+                    folderContainer.classList.add('hidden');
+                    return;
+                }
+
+                folderContainer.classList.remove('hidden');
+                folderList.innerHTML = `<div class="text-gray-400 text-sm p-2">${t('loading')}</div>`;
+
+                try {
+                    const res = await fetch(`/api/minio/folders/${selectedBucket}`);
+                    const folders = await res.json();
+                    
+                    folderList.innerHTML = '';
+                    
+                    const rootDiv = document.createElement('div');
+                    rootDiv.className = 'cursor-pointer hover:bg-[#2a2d2e] p-2 rounded text-sm flex items-center bg-[#007acc] text-white';
+                    rootDiv.textContent = `/ (${t('root')})`;
+                    rootDiv.onclick = () => selectFolder('', rootDiv);
+                    folderList.appendChild(rootDiv);
+                    
+                    selectFolder('', rootDiv);
+
+                    folders.forEach(f => {
+                        const div = document.createElement('div');
+                        div.className = 'cursor-pointer hover:bg-[#2a2d2e] p-2 rounded text-sm flex items-center text-[#cccccc]';
+                        div.textContent = f;
+                        div.onclick = () => selectFolder(f, div);
+                        folderList.appendChild(div);
+                    });
+
+                } catch (err) {
+                    Toast.show(t('error'), 'error');
+                }
+            });
+
+            function selectFolder(prefix, element) {
+                selectedPrefix = prefix;
+                Array.from(folderList.children).forEach(c => {
+                    c.classList.remove('bg-[#007acc]', 'text-white');
+                    c.classList.add('text-[#cccccc]');
+                });
+                element.classList.remove('text-[#cccccc]');
+                element.classList.add('bg-[#007acc]', 'text-white');
+            }
+
+            openBtn.addEventListener('click', () => {
+                if (selectedBucket) {
+                    window.location.href = `/editor?bucket=${selectedBucket}&prefix=${selectedPrefix}`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

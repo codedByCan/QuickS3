@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickS3 Editor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vscode-codicons@0.0.17/dist/codicon.min.css">
+</head>
+<body>
+    <div class="workbench">
+        <div class="activity-bar">
+            <div class="activity-item active" id="activity-explorer" title="Explorer">
+                <i class="codicon codicon-files"></i>
+            </div>
+            <div class="activity-item" id="activity-search" title="Search">
+                <i class="codicon codicon-search"></i>
+            </div>
+            <div class="spacer"></div>
+            <div class="activity-item" id="activity-logout" title="Logout">
+                <i class="codicon codicon-account"></i>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div id="view-explorer" class="sidebar-view">
+                <div class="sidebar-title">
+                    <span data-i18n="files">EXPLORER</span>
+                    <div class="sidebar-actions">
+                        <i class="codicon codicon-new-file" id="btn-new-file" title="New File"></i>
+                        <i class="codicon codicon-refresh" id="btn-refresh" title="Refresh"></i>
+                    </div>
+                </div>
+                <div class="sidebar-content" id="file-explorer">
+                </div>
+            </div>
+
+            <div id="view-search" class="sidebar-view hidden">
+                <div class="sidebar-title">
+                    <span data-i18n="search">SEARCH</span>
+                </div>
+                <div class="search-container">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="global-search-input" placeholder="Search">
+                    </div>
+                    <div id="search-results" class="search-results"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-area">
+            <div class="tabs-container" id="tabs-bar">
+            </div>
+            <div class="editor-container" id="monaco-editor-container">
+                <div id="welcome-screen" class="welcome-screen">
+                    <div class="welcome-content">
+                        <i class="codicon codicon-vscode" style="font-size: 64px; margin-bottom: 20px; color: #3c3c3c;"></i>
+                        <h2 data-i18n="welcome">QuickS3 Editor</h2>
+                        <p class="shortcut">Ctrl+S <span data-i18n="save">Save</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="status-left">
+            <div class="status-item"><i class="codicon codicon-source-control"></i> main</div>
+            <div class="status-item" id="status-errors"><i class="codicon codicon-error"></i> 0</div>
+            <div class="status-item" id="status-warnings"><i class="codicon codicon-warning"></i> 0</div>
+        </div>
+        <div class="status-right">
+            <div class="status-item" id="cursor-position">Ln 1, Col 1</div>
+            <div class="status-item">UTF-8</div>
+            <div class="status-item" id="file-lang">Plain Text</div>
+            <div class="status-item"><i class="codicon codicon-bell"></i></div>
+        </div>
+    </div>
+
+    <div id="context-menu" class="context-menu">
+        <div class="context-menu-item" id="ctx-rename" data-i18n="rename">Rename</div>
+        <div class="context-menu-item" id="ctx-delete" data-i18n="delete">Delete</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
+    <script>
+        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
+    </script>
+    <script src="js/i18n.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/editor.js"></script>
+</body>
+</html>
